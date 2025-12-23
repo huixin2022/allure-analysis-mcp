@@ -1,39 +1,71 @@
 # MCP-Allure
 
-MCP-Allure is a MCP server that reads Allure reports and returns them in LLM-friendly formats, with **Jira integration** for creating and managing issues from test failures.
+A Model Context Protocol (MCP) server for AI-powered test analysis. Transforms Allure test reports into LLM-friendly formats and integrates with Jira for automated issue management.
 
-# Motivation
+[![MCP](https://img.shields.io/badge/MCP-Compatible-blue)](https://modelcontextprotocol.io/)
 
-As AI and Large Language Models (LLMs) become increasingly integral to software development, there is a growing need to bridge the gap between traditional test reporting and AI-assisted analysis. Traditional Allure test report formats, while human-readable, aren't optimized for LLM consumption and processing.
+---
 
-MCP-Allure addresses this challenge by transforming Allure test reports into LLM-friendly formats. This transformation enables AI models to better understand, analyze, and provide insights about test results, making it easier to:
+## ✨ Key Features
 
-- Generate meaningful test summaries and insights
-- Identify patterns in test failures
-- Suggest potential fixes for failing tests
-- Enable more effective AI-assisted debugging
-- Facilitate automated test documentation generation
+### 📊 Dual Format Support
+Parse both Allure report formats with **automatic detection**:
 
-By optimizing test reports for LLM consumption, MCP-Allure helps development teams leverage the full potential of AI tools in their testing workflow, leading to more efficient and intelligent test analysis and maintenance.
+| Format | Directory | Description |
+|--------|-----------|-------------|
+| **HTML Report** | `allure-report/` | Generated HTML report (contains `data/suites.json`) |
+| **Raw Results** | `allure-results/` | Raw test output (`*-result.json` files) |
 
-# Problems Solved
-- **Efficiency**: Traditional test reporting formats are not optimized for AI consumption, leading to inefficiencies in test analysis and maintenance.
-- **Accuracy**: AI models may struggle with interpreting and analyzing test reports that are not in a format optimized for AI consumption.
-- **Cost**: Converting test reports to LLM-friendly formats can be time-consuming and expensive.
+No need to specify format — the tool automatically detects and parses correctly.
 
-# Key Features
-- **Dual Format Support**: Parses both allure-report (HTML report) and allure-results (raw test output) with automatic detection
-- **Direct Parsing**: No external dependencies - parses allure-results directly without needing Allure CLI
-- **Smart Response Sizing**: Multiple output modes (summary/compact/detailed/full) to fit LLM context limits
-- **LLM-Optimized**: Compact JSON output with automatic truncation for large test suites
-- **Flexible Filtering**: Filter by test status (passed/failed/broken/skipped)
-- **Conversion**: Converts Allure test reports into LLM-friendly formats
-- **Efficiency**: Converts test reports efficiently with minimal token usage
-- **Jira Integration**: Create bugs, search issues, and link test failures directly to Jira
+### 🎯 Smart Context Management
+Avoid LLM context length limits with **4 output modes**:
 
-# Installation 
+| Mode | Size | Best For |
+|------|------|----------|
+| `summary` ⭐ | Smallest | Quick overview, initial analysis |
+| `compact` | Small | Focus on failures only |
+| `detailed` | Medium | Failed tests with step details |
+| `full` | Largest | Complete data (auto-truncates if >50KB) |
 
-To install mcp-allure using uv:
+### 🔗 Jira Integration
+Full Jira Cloud support with API token authentication:
+
+| Operation | Description |
+|-----------|-------------|
+| **Test Connection** | Verify API token authentication |
+| **Search Issues** | Query with JQL (Jira Query Language) |
+| **Create Issues** | Create bugs, tasks, stories, etc. |
+| **Create Bug from Test** | Auto-formatted bug from test failure |
+| **Add Comments** | Comment on existing issues |
+| **List Projects** | Get accessible projects |
+| **Get Issue Types** | Available types per project |
+
+---
+
+## 🚀 Installation
+
+### Basic Setup (Allure Only)
+
+```json
+{
+  "mcpServers": {
+    "mcp-allure-server": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "mcp[cli]",
+        "mcp",
+        "run",
+        "/path/to/mcp-allure/mcp-allure-server.py"
+      ]
+    }
+  }
+}
+```
+
+### Full Setup (Allure + Jira)
 
 ```json
 {
@@ -58,42 +90,44 @@ To install mcp-allure using uv:
 }
 ```
 
-## Jira Configuration (Optional)
+### Jira API Token Setup
 
-To enable Jira integration, set the following environment variables:
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `JIRA_BASE_URL` | Your Jira instance URL | `https://yourcompany.atlassian.net` |
-| `JIRA_EMAIL` | Your Atlassian account email | `[email protected]` |
-| `JIRA_API_TOKEN` | Your Jira API token | `ATATT3xFfGF0...` |
-
-### Generating a Jira API Token
-
-1. Go to [Atlassian Account API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+1. Go to [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
 2. Click **Create API token**
-3. Enter a label (e.g., "MCP Allure Integration")
-4. Click **Create** and copy the token immediately
+3. Enter a label (e.g., "MCP Allure")
+4. Copy the token immediately (shown only once)
 
-> **Note:** The Allure report tools work without Jira configuration. Jira tools will return an error message if not configured.
-# Tool
-##  get_allure_report
+| Environment Variable | Description | Example |
+|---------------------|-------------|---------|
+| `JIRA_BASE_URL` | Jira instance URL | `https://company.atlassian.net` |
+| `JIRA_EMAIL` | Your Atlassian email | `[email protected]` |
+| `JIRA_API_TOKEN` | Generated API token | `ATATT3xFfGF0...` |
 
-- **Automatically detects and parses** both Allure HTML reports and raw Allure results
-- **Smart response sizing** to avoid exceeding LLM context limits
+> **Note:** Allure tools work without Jira configuration. Jira tools return helpful error messages if not configured.
 
-### Parameters
+---
+
+## 📖 Tools Reference
+
+### Allure Report Tool
+
+#### `get_allure_report`
+
+Parse Allure reports with smart output sizing for LLM consumption.
+
+**Parameters:**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `results_dir` | string | required | Path to allure-report or allure-results directory |
-| `mode` | string | "summary" | Output mode: "summary", "compact", "detailed", or "full" |
-| `status_filter` | string | null | Filter by status: "failed", "passed", "broken", "skipped" |
+| `results_dir` | string | required | Path to `allure-report` or `allure-results` |
+| `mode` | string | `"summary"` | Output mode: `summary`, `compact`, `detailed`, `full` |
+| `status_filter` | string | `null` | Filter: `failed`, `passed`, `broken`, `skipped` |
 
-### Output Modes
+**Output Modes Explained:**
 
-#### 1. `summary` (Default - Most Compact) ⭐ Recommended
-Returns only statistics and failed test list. Best for initial analysis.
+#### 1. `summary` (Default) ⭐ Recommended First Call
+
+Most compact. Returns statistics and failed test list only.
 
 ```json
 {
@@ -116,8 +150,9 @@ Returns only statistics and failed test list. Best for initial analysis.
 }
 ```
 
-#### 2. `compact` (Failures Focus)
-Returns test cases without verbose details. Shows only failed tests by default.
+#### 2. `compact` — Failures Focus
+
+Shows only failed tests with minimal details.
 
 ```json
 {
@@ -134,8 +169,9 @@ Returns test cases without verbose details. Shows only failed tests by default.
 }
 ```
 
-#### 3. `detailed` (With Steps)
-Returns test cases with truncated step information (limited to 50 tests, 2-level step depth).
+#### 3. `detailed` — With Steps
+
+Includes step information (limited to 50 tests, 2-level step depth).
 
 ```json
 {
@@ -143,7 +179,6 @@ Returns test cases with truncated step information (limited to 50 tests, 2-level
   "test-suites": [
     {
       "name": "tests.test_login",
-      "status": "passed",
       "test-cases": [
         {
           "name": "test_success",
@@ -161,139 +196,138 @@ Returns test cases with truncated step information (limited to 50 tests, 2-level
 }
 ```
 
-#### 4. `full` (Everything - Use with Caution)
-Returns all data. Automatically truncates if response exceeds 50KB.
+#### 4. `full` — Everything (Use with Caution)
 
-### Usage Examples
+Complete data. Auto-truncates if response exceeds 50KB.
 
-#### Quick Overview (Recommended for First Call)
-```
+**Usage Examples:**
+
+```python
+# Quick overview (recommended first call)
 get_allure_report(results_dir="/path/to/allure-results")
-```
 
-#### Focus on Failures
-```
+# Focus on failures
 get_allure_report(results_dir="/path/to/allure-results", mode="compact")
-```
 
-#### Detailed Failed Tests Only
-```
+# Detailed failed tests only
 get_allure_report(results_dir="/path/to/allure-results", mode="detailed", status_filter="failed")
-```
 
-#### All Passed Tests
-```
+# All passed tests (verification)
 get_allure_report(results_dir="/path/to/allure-results", mode="compact", status_filter="passed")
 ```
 
-### Directory Support
-
-The tool automatically detects:
-- `allure-report` directory (generated HTML report with `data/suites.json`)
-- `allure-results` directory (raw test output with `*-result.json` files)
-
-### Command-Line Testing
-
-```bash
-# Test with summary mode (default)
-python test_parser.py /path/to/allure-results
-
-# The test script shows detailed output locally
-```
-
-The tool automatically detects which format you're using and applies the appropriate parsing method.
-
 ---
 
-# Jira Integration Tools
+### Jira Tools
 
-The following tools are available when Jira is configured:
+#### `jira_test_connection`
 
-## jira_test_connection
+Verify Jira API token authentication.
 
-Test Jira connection and verify API token authentication.
-
-```
+```python
 jira_test_connection()
 ```
 
-**Returns:** Current user information and connection status.
+**Returns:** User info and connection status.
 
-## jira_get_issue
+---
 
-Get details of a specific Jira issue.
+#### `jira_search`
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `issue_key` | string | Yes | Issue key (e.g., 'PROJ-123') |
-
-```
-jira_get_issue(issue_key="PROJ-123")
-```
-
-## jira_search
-
-Search Jira issues using JQL (Jira Query Language).
+Search issues using JQL (Jira Query Language).
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `jql` | string | required | JQL query string |
-| `max_results` | int | 20 | Maximum results (max 50) |
+| `max_results` | int | `20` | Maximum results (max 50) |
 
-**Examples:**
-```
-jira_search(jql="project = PROJ AND status = Open")
+```python
+# Find open bugs in project
+jira_search(jql="project = PROJ AND type = Bug AND status = Open")
+
+# Find test failures from last 7 days
 jira_search(jql="labels = test-failure AND created >= -7d", max_results=50)
+
+# Find high priority issues assigned to me
+jira_search(jql="assignee = currentUser() AND priority = High")
 ```
 
-## jira_create_issue
+---
+
+#### `jira_get_issue`
+
+Get details of a specific issue.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `issue_key` | string | Yes | Issue key (e.g., `PROJ-123`) |
+
+```python
+jira_get_issue(issue_key="PROJ-123")
+```
+
+---
+
+#### `jira_create_issue`
 
 Create a new Jira issue.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `project_key` | string | required | Project key (e.g., 'PROJ') |
-| `summary` | string | required | Issue summary/title |
+| `project_key` | string | required | Project key (e.g., `PROJ`) |
+| `summary` | string | required | Issue title |
 | `description` | string | required | Issue description |
-| `issue_type` | string | "Bug" | Issue type (Bug, Task, Story, etc.) |
-| `priority` | string | null | Priority (Highest, High, Medium, Low, Lowest) |
-| `labels` | list | null | List of labels |
+| `issue_type` | string | `"Bug"` | Type: Bug, Task, Story, Epic, etc. |
+| `priority` | string | `null` | Highest, High, Medium, Low, Lowest |
+| `labels` | list | `null` | List of labels |
 
-```
+```python
 jira_create_issue(
     project_key="PROJ",
-    summary="Login button not working",
-    description="The login button does not respond on click",
+    summary="Login button not responding",
+    description="The login button does not respond to clicks on mobile devices",
+    issue_type="Bug",
     priority="High",
-    labels=["ui", "login"]
+    labels=["ui", "mobile", "login"]
 )
 ```
 
-## jira_create_bug_from_test_failure ⭐
+---
 
-Create a bug specifically formatted for test failures. Automatically adds the `test-failure` label.
+#### `jira_create_bug_from_test_failure` ⭐
+
+Create a well-formatted bug from test failure. Auto-adds `test-failure` label.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `project_key` | string | required | Project key |
-| `test_name` | string | required | Name of the failed test |
-| `test_suite` | string | required | Name of the test suite |
-| `error_message` | string | required | Error message or failure reason |
-| `steps_to_reproduce` | string | null | Additional context |
-| `priority` | string | "High" | Bug priority |
-| `labels` | list | null | Additional labels |
+| `test_name` | string | required | Failed test name |
+| `test_suite` | string | required | Test suite name |
+| `error_message` | string | required | Error/failure message |
+| `steps_to_reproduce` | string | `null` | Additional context |
+| `priority` | string | `"High"` | Bug priority |
+| `labels` | list | `null` | Additional labels |
 
-```
+```python
 jira_create_bug_from_test_failure(
     project_key="PROJ",
-    test_name="test_login_invalid_password",
-    test_suite="tests.test_authentication",
-    error_message="AssertionError: Expected 401, got 500",
-    priority="High"
+    test_name="test_checkout_payment",
+    test_suite="tests.test_e2e.TestCheckout",
+    error_message="AssertionError: Expected status 200, got 500\nResponse: Internal Server Error",
+    steps_to_reproduce="1. Add item to cart\n2. Proceed to checkout\n3. Submit payment",
+    priority="High",
+    labels=["e2e", "payments"]
 )
 ```
 
-## jira_add_comment
+**Created Issue Format:**
+- **Summary:** `[Test Failure] tests.test_e2e.TestCheckout: test_checkout_payment`
+- **Labels:** `test-failure` + any additional labels
+- **Description:** Structured with test info, error message, and steps
+
+---
+
+#### `jira_add_comment`
 
 Add a comment to an existing issue.
 
@@ -302,19 +336,26 @@ Add a comment to an existing issue.
 | `issue_key` | string | Yes | Issue key |
 | `comment` | string | Yes | Comment text |
 
-```
-jira_add_comment(issue_key="PROJ-123", comment="Test passed after fix in commit abc123")
+```python
+jira_add_comment(
+    issue_key="PROJ-123",
+    comment="Test passed after fix in commit abc123. Closing issue."
+)
 ```
 
-## jira_get_projects
+---
 
-Get list of accessible Jira projects.
+#### `jira_get_projects`
 
-```
+List all accessible Jira projects.
+
+```python
 jira_get_projects()
 ```
 
-## jira_get_issue_types
+---
+
+#### `jira_get_issue_types`
 
 Get available issue types for a project.
 
@@ -322,38 +363,74 @@ Get available issue types for a project.
 |-----------|------|----------|-------------|
 | `project_key` | string | Yes | Project key |
 
-```
+```python
 jira_get_issue_types(project_key="PROJ")
 ```
 
 ---
 
-# Workflow Example
+## 🔄 Workflow Example
 
-Here's a typical workflow combining Allure reports with Jira:
+A typical workflow combining Allure analysis with Jira integration:
 
-1. **Analyze test results:**
-   ```
-   get_allure_report(results_dir="./allure-results", mode="summary")
-   ```
+### Step 1: Analyze Test Results
 
-2. **Get details on failed tests:**
-   ```
-   get_allure_report(results_dir="./allure-results", mode="detailed", status_filter="failed")
-   ```
+```python
+# Get quick overview
+get_allure_report(results_dir="./allure-results", mode="summary")
+```
 
-3. **Create bugs for failures:**
-   ```
-   jira_create_bug_from_test_failure(
-       project_key="PROJ",
-       test_name="test_checkout_flow",
-       test_suite="tests.test_e2e",
-       error_message="TimeoutError: Element not found after 30s",
-       priority="High"
-   )
-   ```
+### Step 2: Investigate Failures
 
-4. **Search for existing related issues:**
-   ```
-   jira_search(jql="project = PROJ AND labels = test-failure AND status != Done")
-   ```
+```python
+# Get details on failed tests
+get_allure_report(results_dir="./allure-results", mode="detailed", status_filter="failed")
+```
+
+### Step 3: Check Existing Issues
+
+```python
+# Search for existing bugs related to failures
+jira_search(jql="project = PROJ AND labels = test-failure AND status != Done")
+```
+
+### Step 4: Create Bug for New Failure
+
+```python
+# Create bug from test failure
+jira_create_bug_from_test_failure(
+    project_key="PROJ",
+    test_name="test_user_registration",
+    test_suite="tests.test_auth",
+    error_message="ValidationError: Email field required",
+    priority="High"
+)
+```
+
+### Step 5: Update Existing Issue
+
+```python
+# Add comment when test passes after fix
+jira_add_comment(
+    issue_key="PROJ-456",
+    comment="✅ Test now passing after fix in PR #789"
+)
+```
+
+---
+
+## 🎯 Why MCP-Allure?
+
+| Problem | Solution |
+|---------|----------|
+| Allure reports aren't LLM-optimized | Transforms to structured JSON with smart sizing |
+| Context length limits | Multiple output modes from summary to full |
+| Manual bug creation from failures | Auto-formatted Jira bugs with test details |
+| Switching between tools | Single MCP server for analysis + issue management |
+| Large test suites overwhelm LLMs | Automatic truncation and filtering |
+
+---
+
+## 📝 License
+
+MIT License - See [LICENSE](LICENSE) for details.
