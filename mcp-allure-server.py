@@ -173,9 +173,9 @@ def _create_detailed(result: Dict[str, Any], max_tests: int = 50, max_step_depth
 
 
 @mcp.tool()
-async def get_allure_report(results_dir: str, mode: str = "summary", status_filter: str = None) -> str:
+async def analyze_allure_report(results_dir: str, mode: str = "summary", status_filter: str = None) -> str:
     """
-    Read allure report or results directory and return json data.
+    Analyze allure report or results directory and return structured JSON data.
     Automatically detects whether the input is an allure-report or allure-results directory.
     
     Args:
