@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir mcp[cli]>=1.5.0
 COPY . .
 
 # Default command to start MCP server
-CMD ["python", "mcp-allure-server.py"]
+CMD ["python", "mcp_allure_server.py"]

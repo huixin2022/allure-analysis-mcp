@@ -10,5 +10,5 @@ startCommand:
   commandFunction:
     # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
     |-
-    (config) => ({command: 'python', args: ['mcp-allure-server.py']})
+    (config) => ({command: 'python', args: ['mcp_allure_server.py']})
   exampleConfig: {}

@@ -33,7 +33,7 @@ December 10, 2025
 
 ### 2. MCP Server Enhancement
 
-#### File: `mcp-allure-server.py`
+#### File: `mcp_allure_server.py`
 
 **Modified:**
 - `get_allure_report()` tool function:
@@ -119,7 +119,7 @@ December 10, 2025
 ```
 mcp-allure/
 ├── allure_html.py (143 lines)
-├── mcp-allure-server.py (22 lines)
+├── mcp_allure_server.py (22 lines)
 ├── main.py
 ├── README.md (106 lines)
 └── ...
@@ -129,7 +129,7 @@ mcp-allure/
 ```
 mcp-allure/
 ├── allure_html.py (405 lines) ⭐ ENHANCED
-├── mcp-allure-server.py (38 lines) ⭐ ENHANCED
+├── mcp_allure_server.py (38 lines) ⭐ ENHANCED
 ├── test_parser.py (NEW) ⭐ NEW
 ├── EXAMPLES.md (NEW) ⭐ NEW
 ├── IMPLEMENTATION_SUMMARY.md (NEW) ⭐ NEW

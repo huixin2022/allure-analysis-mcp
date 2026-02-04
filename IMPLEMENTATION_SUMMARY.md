@@ -103,7 +103,7 @@ result = parser.parse()  # Works for both formats!
 Now uses auto-detection instead of hardcoded parser type.
 
 ### 5. Enhanced MCP Tool
-**File:** `mcp-allure-server.py`
+**File:** `mcp_allure_server.py`
 
 **Changes:**
 - Uses `create_allure_parser()` for auto-detection

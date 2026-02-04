@@ -1,5 +1,5 @@
 [project]
-name = "server"
+name = "mcp-allure-server"
 version = "0.3.0"
 description = "MCP server for Allure test report analysis"
 readme = "README.md"
@@ -7,3 +7,9 @@ requires-python = ">=3.11"
 dependencies = [
     "mcp[cli]>=1.5.0",
 ]
+
+[project.scripts]
+mcp-allure = "mcp_allure_server:main"
+
+[tool.setuptools]
+py-modules = ["mcp_allure_server", "allure_html"]

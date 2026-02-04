@@ -32,6 +32,50 @@ Avoid LLM context length limits with **4 output modes**:
 
 ## Installation
 
+Choose the method that best fits your needs:
+
+| Method | Best For | Pros |
+|--------|----------|------|
+| **CLI (Recommended)** | Production use | Faster startup, simpler config, no runtime downloads |
+| **uv run** | Quick testing | No installation needed, always latest |
+
+### Method 1: CLI Installation (Recommended)
+
+Install the package once, then use the simple `mcp-allure` command.
+
+**Step 1: Install**
+
+```bash
+# Clone or download the repository
+cd /path/to/mcp-allure
+
+# Install with uv (recommended)
+uv pip install .
+
+# Or with pip
+pip install .
+```
+
+**Step 2: Configure MCP**
+
+Add to your MCP settings (e.g., `~/.cursor/mcp.json` or Claude Desktop config):
+
+```json
+{
+  "mcpServers": {
+    "mcp-allure-server": {
+      "command": "mcp-allure"
+    }
+  }
+}
+```
+
+That's it! The `mcp-allure` command is now available.
+
+### Method 2: Using `uv run` (No Installation)
+
+Run directly without installing. Useful for testing or one-time use.
+
 ```json
 {
   "mcpServers": {
@@ -43,12 +87,14 @@ Avoid LLM context length limits with **4 output modes**:
         "mcp[cli]",
         "mcp",
         "run",
-        "/path/to/mcp-allure/mcp-allure-server.py"
+        "/path/to/mcp-allure/mcp_allure_server.py"
       ]
     }
   }
 }
 ```
+
+> **Note:** If you're behind a corporate proxy, you may need to add `"env": { "UV_NATIVE_TLS": "true" }` to handle SSL certificates.
 
 ---
 

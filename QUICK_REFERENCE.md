@@ -250,7 +250,7 @@ python test_parser.py allure-results
         "mcp[cli]",
         "mcp",
         "run",
-        "/path/to/mcp-allure/mcp-allure-server.py"
+        "/path/to/mcp-allure/mcp_allure_server.py"
       ]
     }
   }
