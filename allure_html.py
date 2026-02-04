@@ -80,13 +80,16 @@ class AllureSuiteParser:
         with open(case_file, 'r', encoding='utf-8') as f:
             case_data = json.load(f)
         # Check if testcase_status is None or matches the case status
+        status = case_data.get('status', '')
+        if self.testcase_status and status != self.testcase_status:
+            return None  # Skip test cases that don't match the filter
 
         test_case = {
             "name": case_data.get('fullName', ''),
             "title": case_data.get('title', ''),
             "description": case_data.get('description', ''),
             "severity": self._get_severity(case_data.get('labels', [])),
-            "status": case_data.get('status', ''),
+            "status": status,
             "start": str(case_data.get('time', {}).get('start', '')),
             "stop": str(case_data.get('time', {}).get('stop', '')),
             "labels": case_data.get('labels', []),
